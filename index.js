@@ -59,6 +59,15 @@ async function run() {
             };
             const result = await itemCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
+        });
+
+
+        // delete a table item (from database too)
+        app.delete('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await itemCollection.deleteOne(query);
+            res.send(result);
         })
 
 
