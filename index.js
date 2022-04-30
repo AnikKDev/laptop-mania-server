@@ -3,7 +3,8 @@ const app = express()
 const port = process.env.PORT || 5000;
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -20,7 +21,7 @@ async function run() {
         const itemCollection = client.db("maniadb").collection("items");
 
         // get all available items from inventory
-        app.get('/items', async (req, res) => {
+        app.get('/inventory', async (req, res) => {
             // search all items
             const query = {};
             const cursor = itemCollection.find(query);
@@ -35,6 +36,22 @@ async function run() {
             const result = await itemCollection.findOne(query);
             res.send(result);
         })
+
+        // update item quantity
+        app.put('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedQuantity = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    quantity: updatedQuantity.newQuantity
+                }
+            };
+            const result = await itemCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
 
     } finally {
 
