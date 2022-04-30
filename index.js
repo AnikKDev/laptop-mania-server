@@ -20,8 +20,17 @@ async function run() {
         await client.connect();
         const itemCollection = client.db("maniadb").collection("items");
 
-        // get all available items from inventory
+        // get six items from inventory
         app.get('/inventory', async (req, res) => {
+            // search all items
+            const query = {};
+            const cursor = itemCollection.find(query).limit(6);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        // get all available items from inventory
+        app.get('/manage-inventories', async (req, res) => {
             // search all items
             const query = {};
             const cursor = itemCollection.find(query);
