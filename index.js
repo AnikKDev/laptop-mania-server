@@ -46,7 +46,7 @@ async function run() {
             res.send(result);
         })
 
-        // update item quantity
+        // update item quantity (increament and decreament)
         app.put('/inventory/:id', async (req, res) => {
             const id = req.params.id;
             const updatedQuantity = req.body;
@@ -60,6 +60,9 @@ async function run() {
             const result = await itemCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         });
+
+
+
 
 
         // delete a table item (from database too)
