@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 5000;
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -20,6 +21,12 @@ async function run() {
         await client.connect();
         const itemCollection = client.db("maniadb").collection("items");
 
+        // jwt token
+        app.post('/token', async (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.JWT_TOKEN);
+            res.send(token);
+        })
         // get six items from inventory
         app.get('/inventory', async (req, res) => {
             // search all items
@@ -54,7 +61,7 @@ async function run() {
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
-                    quantity: updatedQuantity.newQuantity
+                    quantity: updatedQuantity?.newQuantity
                 }
             };
             const result = await itemCollection.updateOne(filter, updatedDoc, options);
@@ -79,6 +86,17 @@ async function run() {
             const newItem = req.body;
             const result = await itemCollection.insertOne(newItem);
             res.send(result);
+        });
+
+
+        // get my items from inventory
+        app.get('/my-items', async (req, res) => {
+            const email = req.query.email;
+            // console.log(email);
+            const query = { email: email };
+            const cursor = itemCollection.find(query);
+            const items = await cursor.toArray();
+            res.send(items);
         })
 
 
