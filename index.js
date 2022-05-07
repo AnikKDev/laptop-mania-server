@@ -11,10 +11,10 @@ app.use(cors());
 app.use(express.json());
 
 // jwt function
-const verifyToken = (req, res, next) => {
+function verifyToken(req, res, next) {
     const headerAuth = req.headers.authorization;
     if (!headerAuth) {
-        return res.status(401).send({ message: 'Unauthorized' })
+        return res.status(401).send({ message: 'Unauthorized' });
     }
     const token = headerAuth.split(' ')[1];
     jwt.verify(token, process.env.JWT_TOKEN, (error, decoded) => {
@@ -107,11 +107,9 @@ async function run() {
 
         // get my items from inventory
         app.get('/my-items', verifyToken, async (req, res) => {
-            const decodedData = req?.decoded?.email;
-            // console.log(decodedData);
-            const email = req?.query?.email;
+            const decodedData = req.decoded.email;
+            const email = req.query.email;
             if (email === decodedData) {
-                // console.log(email);
                 const query = { email: email };
                 const cursor = itemCollection.find(query);
                 const items = await cursor.toArray();
@@ -130,7 +128,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello Laptop mania!')
 })
 
 app.listen(port, () => {
